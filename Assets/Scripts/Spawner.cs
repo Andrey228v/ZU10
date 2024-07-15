@@ -7,18 +7,15 @@ public class Spawner : MonoBehaviour
     [Min(0.1f)][SerializeField] private float _timeSpawn;
     [SerializeField] private SpawnerObject _objectPrefab;
     [SerializeField] private Material _material;
-    [SerializeField] private DirectionArrow _directionArrowPrefab;
+    [SerializeField] private TaregetObject _targetObject;
 
     private Renderer _renderer;
-    private DirectionArrow _directionArrow;
     private bool _isSpawn = true;
 
     public ObjectPool<SpawnerObject> Pool { get; private set; }
 
     private void Start()
     {
-        CreateDirectionArrow();
-
         Pool = new ObjectPool<SpawnerObject>(CreateObject);
 
         _renderer = GetComponent<Renderer>();
@@ -33,9 +30,8 @@ public class Spawner : MonoBehaviour
         {
             SpawnerObject spawnerObject = Pool.Get();
             spawnerObject.transform.position = GetSpawnPosition();
-            spawnerObject.SetDirection(_directionArrow.Angle);
-
             spawnerObject.GetComponent<Renderer>().material = _material;
+            spawnerObject.SetTarget(_targetObject);
 
             yield return new WaitForSeconds(_timeSpawn);
         }
@@ -60,19 +56,5 @@ public class Spawner : MonoBehaviour
     private SpawnerObject CreateObject()
     {
         return Instantiate(_objectPrefab);
-    }
-
-    private void CreateDirectionArrow()
-    {
-        float yUp = 15f;
-
-        _directionArrow = Instantiate(_directionArrowPrefab);
-        _directionArrow.SetTurnAngle();
-
-        float x = gameObject.transform.position.x;
-        float y = gameObject.transform.position.y + yUp;
-        float z = gameObject.transform.position.z;
-
-        _directionArrow.transform.position = new Vector3(x, y, z);
     }
 }

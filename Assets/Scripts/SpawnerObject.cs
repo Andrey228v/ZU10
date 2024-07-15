@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class SpawnerObject : MonoBehaviour
@@ -6,15 +5,16 @@ public class SpawnerObject : MonoBehaviour
     [SerializeField] private int _size = 1;
     [SerializeField] private float _speed = 2f;
 
-    public event Action<Vector3> Test;
+    private TaregetObject _taregetObject;
 
     private void Update()
     {
-        transform.position += transform.forward * _speed * Time.deltaTime;
+        float step = _speed * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, _taregetObject.transform.position, step);
     }
 
-    public void SetDirection(Vector3 angle)
+    public void SetTarget(TaregetObject target) 
     {
-        transform.rotation = Quaternion.Euler(angle);
+        _taregetObject = target;
     }
 }
