@@ -2,21 +2,22 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
+[RequireComponent(typeof(Renderer))]
 public class Spawner : MonoBehaviour
 {
     [Min(0.1f)][SerializeField] private float _timeSpawn;
-    [SerializeField] private SpawnerObject _objectPrefab;
+    [SerializeField] private Enemy _objectPrefab;
     [SerializeField] private Material _material;
     [SerializeField] private TaregetObject _targetObject;
 
     private Renderer _renderer;
     private bool _isSpawn = true;
 
-    public ObjectPool<SpawnerObject> Pool { get; private set; }
+    public ObjectPool<Enemy> Pool { get; private set; }
 
     private void Start()
     {
-        Pool = new ObjectPool<SpawnerObject>(CreateObject);
+        Pool = new ObjectPool<Enemy>(CreateObject);
 
         _renderer = GetComponent<Renderer>();
         _renderer.material = _material;
@@ -28,10 +29,11 @@ public class Spawner : MonoBehaviour
     {
         while (_isSpawn)
         {
-            SpawnerObject spawnerObject = Pool.Get();
-            spawnerObject.transform.position = GetSpawnPosition();
-            spawnerObject.GetComponent<Renderer>().material = _material;
-            spawnerObject.SetTarget(_targetObject);
+            Enemy spawnerObject = Pool.Get();
+
+            Vector3 position = GetSpawnPosition();
+
+            spawnerObject.Initialize(position, _targetObject, _material);
 
             yield return new WaitForSeconds(_timeSpawn);
         }
@@ -53,7 +55,7 @@ public class Spawner : MonoBehaviour
         return position;
     }
 
-    private SpawnerObject CreateObject()
+    private Enemy CreateObject()
     {
         return Instantiate(_objectPrefab);
     }
