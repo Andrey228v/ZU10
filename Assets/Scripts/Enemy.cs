@@ -7,6 +7,13 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _speed = 2f;
 
     private TaregetObject _taregetObject;
+    private Spawner _spawner;
+    private Renderer _renderer;
+
+    private void Start()
+    {
+        _renderer = GetComponent<Renderer>();
+    }
 
     private void Update()
     {
@@ -14,10 +21,16 @@ public class Enemy : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, _taregetObject.transform.position, step);
     }
 
-    public void Initialize(Vector3 position,TaregetObject target, Material material)
+    private void OnDestroy()
+    {
+        _spawner.Pool.Release(this);
+    }
+
+    public void Initialize(Vector3 position,TaregetObject target, Material material, Spawner spawner)
     {
         transform.position = position;
-        GetComponent<Renderer>().material = material;
+        _renderer.material = material;
         _taregetObject = target;
+        _spawner = spawner;
     }
 }

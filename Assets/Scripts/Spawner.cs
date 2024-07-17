@@ -10,7 +10,6 @@ public class Spawner : MonoBehaviour
     [SerializeField] private Material _material;
     [SerializeField] private TaregetObject _targetObject;
 
-    private Renderer _renderer;
     private bool _isSpawn = true;
 
     public ObjectPool<Enemy> Pool { get; private set; }
@@ -19,23 +18,24 @@ public class Spawner : MonoBehaviour
     {
         Pool = new ObjectPool<Enemy>(CreateObject);
 
-        _renderer = GetComponent<Renderer>();
-        _renderer.material = _material;
+        GetComponent<Renderer>().material = _material;
 
         StartCoroutine(Spawn());
     }
 
     private IEnumerator Spawn()
     {
+        WaitForSeconds wait = new WaitForSeconds(_timeSpawn);
+
         while (_isSpawn)
         {
             Enemy spawnerObject = Pool.Get();
 
             Vector3 position = GetSpawnPosition();
 
-            spawnerObject.Initialize(position, _targetObject, _material);
+            spawnerObject.Initialize(position, _targetObject, _material, this);
 
-            yield return new WaitForSeconds(_timeSpawn);
+            yield return wait;
         }
     }
 
